@@ -13,6 +13,7 @@ import android.database.Cursor
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import android.os.Handler
+import java.util.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener  {
 
@@ -72,6 +73,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
             imageView.setImageURI(imageUri)
         }
     }
+    private var mTimer: Timer? = null
+    private var mTimerSec = 0.0
+    var num = 0
 
     override fun onClick(v: View) {
         if (v.id == R.id.button1) {
@@ -121,35 +125,60 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             }
         } else if (v.id == R.id.button3) {
+            /*
+            button3.setOnClickListener(){
+                if (num != 0) {
+                    button1.isEnabled = true
+                    button2.isEnabled = true
+                    button3.text = "再生"
+                    mTimer!!.cancel()
+                    mTimerSec = 0.0
+                }
+            }
+
+            */
+
+            button1.isEnabled = false
+            button2.isEnabled = false
+            button3.text = "停止"
             Log.d("ANDROID", "ボタン３押下" )
             //if(cursor!!.moveToFirst()) {
-
-                do{
-                    val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
-                    val id = cursor.getLong(fieldIndex)
-                    val imageUri =
-                        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                    Log.d("ANDROID", "URI : " + imageUri.toString())
-                    imageView.setImageURI(imageUri)
-
-                    Thread.sleep(1_000)
-                    /*
-                    if (cursor.moveToNext()) {
-                        // indexからIDを取得し、そのIDから画像のURIを取得する
-                        val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
-                        val id = cursor.getLong(fieldIndex)
-                        val imageUri =
-                            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                        Log.d("ANDROID", "URI : " + imageUri.toString())
-                        imageView.setImageURI(imageUri)
-                        Thread.sleep(2_000)
-                        Log.d("ANDROID", "２秒経過、次の画像へ" )
+            // タイマーの作成
+            mTimer = Timer()
+            // タイマーの始動
+            mTimer!!.schedule(object : TimerTask() {
+                override fun run() {
+                    mTimerSec += 0.1
+                    num += 1
+                    mHandler.post {
+                        if (cursor!!.moveToNext()) {
+                            // indexからIDを取得し、そのIDから画像のURIを取得する
+                            val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+                            val id = cursor.getLong(fieldIndex)
+                            val imageUri =
+                                ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                            Log.d("ANDROID", "URI : " + imageUri.toString())
+                            imageView.setImageURI(imageUri)
+                            Log.d("ANDROID", "次の画像へ！！" )
+                        } else {
+                            if (cursor!!.moveToFirst()) {
+                                // indexからIDを取得し、そのIDから画像のURIを取得する
+                                val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+                                val id = cursor.getLong(fieldIndex)
+                                val imageUri =
+                                    ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                                Log.d("ANDROID", "URI : " + imageUri.toString())
+                                imageView.setImageURI(imageUri)
+                                Log.d("ANDROID", "次が無いので最初の画像へ！！")
+                            }
+                        }
                     }
+                }
 
-                     */
-                }while(cursor.moveToNext());
-            //}
+            }, 100, 2000)
             Log.d("ANDROID", "最後の画像にきたのでループ終了" )
+
         }
+
     }
 }
