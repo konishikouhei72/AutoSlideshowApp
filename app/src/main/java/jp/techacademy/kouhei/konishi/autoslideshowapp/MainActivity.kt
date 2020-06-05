@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
         button1.setOnClickListener(this)
         button2.setOnClickListener(this)
         button3.setOnClickListener(this)
+        button4.setOnClickListener(this)
+        button4.isEnabled = false
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // パーミッションの許可状態を確認する
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
 
     override fun onClick(v: View) {
         if (v.id == R.id.button1) {
-            Log.d("ANDROID", "ボタン１" )
+            Log.d("ANDROID", "ボタン１押下" )
             if (cursor!!.moveToNext()) {
                 // indexからIDを取得し、そのIDから画像のURIを取得する
                 val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
@@ -102,7 +104,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             }
         } else if (v.id == R.id.button2) {
-            Log.d("ANDROID", "ボタン２" )
+            Log.d("ANDROID", "ボタン２押下" )
             if (cursor!!.moveToPrevious()) {
                 // indexからIDを取得し、そのIDから画像のURIを取得する
                 val fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
@@ -125,24 +127,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             }
         } else if (v.id == R.id.button3) {
-            /*
-            button3.setOnClickListener(){
-                if (num != 0) {
-                    button1.isEnabled = true
-                    button2.isEnabled = true
-                    button3.text = "再生"
-                    mTimer!!.cancel()
-                    mTimerSec = 0.0
-                }
-            }
-
-            */
-
             button1.isEnabled = false
             button2.isEnabled = false
-            button3.text = "停止"
+            button3.isEnabled = false
+            button4.isEnabled = true
             Log.d("ANDROID", "ボタン３押下" )
-            //if(cursor!!.moveToFirst()) {
             // タイマーの作成
             mTimer = Timer()
             // タイマーの始動
@@ -174,11 +163,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
                         }
                     }
                 }
-
             }, 100, 2000)
-            Log.d("ANDROID", "最後の画像にきたのでループ終了" )
+        } else if (v.id == R.id.button4) {
+            Log.d("ANDROID", "ボタン４押下" )
+            button1.isEnabled = true
+            button2.isEnabled = true
+            button3.isEnabled = true
+            button4.isEnabled = false
 
+            mTimer!!.cancel()
+            mTimer = null
         }
-
     }
 }
